@@ -39,9 +39,7 @@ pip_out.txt
 # Ignore vector databases or local sqlite
 *.sqlite
 *.sqlite3
-chroma/
-chroma_db/
-backend/database/
+
 
 # -----------------------
 # Environment Variables
