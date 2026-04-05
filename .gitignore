@@ -1,0 +1,61 @@
+# -----------------------
+# Node.js / Frontend
+# -----------------------
+node_modules/
+dist/
+dist-ssr/
+*.local
+
+# Vite
+.vite/
+
+# -----------------------
+# Python / Backend
+# -----------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environment
+.venv/
+venv/
+env/
+ENV/
+
+# Logs and outputs
+app.log
+pip_out.txt
+*.log
+
+# -----------------------
+# Data and Local Services
+# -----------------------
+# Ignore backend data / DB folders if they contain large local files
+# (Uncomment below if you want to ignore the data directory contents)
+# backend/data/*
+# !backend/data/.gitkeep
+
+# Ignore vector databases or local sqlite
+*.sqlite
+*.sqlite3
+chroma/
+chroma_db/
+backend/database/
+
+# -----------------------
+# Environment Variables
+# -----------------------
+.env
+.env.*
+!.env.example
+
+# -----------------------
+# OS & Editor Files
+# -----------------------
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+.claude/
