@@ -16,8 +16,16 @@ def embed_query(text: str) -> list:
         return None
         
     try:
+        # Prevent PyTorch from spawning dozens of threads on a tiny AWS VM (which freezes/crashes it)
+        import os
+        os.environ["OMP_NUM_THREADS"] = "1"
+        os.environ["MKL_NUM_THREADS"] = "1"
+        os.environ["TOKENIZERS_PARALLELISM"] = "false"
+        
         if EMBEDDER is None:
-            EMBEDDER = SentenceTransformer("BAAI/bge-small-en-v1.5")
+            logger.info("Initializing query embedder (CPU limited) to prevent AWS crash...")
+            EMBEDDER = SentenceTransformer("BAAI/bge-small-en-v1.5", device="cpu")
+            
         return EMBEDDER.encode([text])[0].tolist()
     except Exception as e:
         logger.error(f"Error embedding query: {e}")
