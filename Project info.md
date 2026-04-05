@@ -19,7 +19,7 @@
 
 ## Time-Series Analysis
 
-Tools: DuckDB for aggregations, Polars for rolling windows, ruptures for changepoint detection, NewsAPI or GDELT for real-world event annotation, Recharts or Plotly.js for frontend charts, Claude API for dynamic summaries
+Tools: DuckDB for aggregations, Polars for rolling windows, ruptures for changepoint detection, Recharts or Plotly.js for frontend charts, Gemini API (with multi-key usage tracking) for dynamic summaries
 
 Functionalities:
 
@@ -27,14 +27,13 @@ Hourly, daily, weekly post volume aggregations
 Rolling 7-day average overlaid on raw counts
 Z-score anomaly flagging (mean + 2 standard deviations)
 Changepoint detection via ruptures to programmatically find narrative momentum shifts
-For each spike, auto-fetch real-world events from GDELT on that date and display as chart annotations
-Every chart gets a dynamic LLM-generated plain-language summary sent to Claude API with actual data points as context, response streamed back, never hardcode
+Every chart gets a dynamic LLM-generated plain-language summary sent to Gemini API with actual data points as context, response streamed back, never hardcode
 
 ## Narrative Lifecycle Tracking
 
 This is your unique feature. Used by RAND Corporation, NATO StratCom, and Graphika in real influence operation reports.
 
-**Tools**: BERTopic for topic clusters, Polars for time-series per cluster, `scipy.stats` for skewness computation, `scipy.optimize` for curve fitting, Claude API for per-topic summaries
+**Tools**: BERTopic for topic clusters, Polars for time-series per cluster, `scipy.stats` for skewness computation, `scipy.optimize` for curve fitting, Gemini API for per-topic summaries
 
 **Implementation**:
 
@@ -66,7 +65,7 @@ Each topic card also shows: top terms, post count, dominant subreddits, growth r
 
 ## Two Network Graphs
 
-**Tools**: NetworkX for construction, iGraph for centrality, `leidenalg` for community detection, PyVis for embeddable interactive HTML
+**Tools**: NetworkX for construction, iGraph for centrality, `leidenalg` for community detection, Cytoscape.js for interactive frontend rendering
 
 **Graph 1 — User-URL Bipartite**
 Nodes: authors one side, URLs other side. Edges: author shared that URL, weight = frequency. Cluster URL nodes by domain. Answers which users coordinate around the same links, which domains are pushed across communities, which authors are link spammers. This is your primary coordination evidence graph.
@@ -107,7 +106,7 @@ Feed all Layer 1 signals as feature vector per author. Flags statistical outlier
 
 ## Topic Clustering and Embedding Visualization
 
-**Tools**: BERTopic, UMAP, HDBSCAN, `sentence-transformers`, Nomic Atlas or DataMapPlot
+**Tools**: BERTopic, UMAP, HDBSCAN, `sentence-transformers`, DataMapPlot
 
 **Implementation**:
 
@@ -116,7 +115,7 @@ Feed all Layer 1 signals as feature vector per author. Flags statistical outlier
 - nr_topics exposed as tunable slider in UI, range 2 to 50
 - At extremes: nr_topics=2 gives broad macro-themes, nr_topics=50 on small dataset gracefully caps via BERTopic's built-in topic reduction, UI shows warning if requested clusters exceed coherent maximum
 - Outlier topic (-1) displayed separately as uncategorized, never crashes layout
-- Reduce to 2D with UMAP, color points by cluster and lifecycle stage badge color, embed interactively via Nomic Atlas or DataMapPlot
+- Reduce to 2D with UMAP, color points by cluster and lifecycle stage badge color, embed interactively via DataMapPlot HTML iframe
 
 Each topic cluster card displays:
 
@@ -131,7 +130,7 @@ Each topic cluster card displays:
 
 ## Chatbot — Multi-Source RAG
 
-**Tools**: `BAAI/bge-small-en-v1.5` for embeddings, ChromaDB with tagged collections, Claude API, FastAPI for streaming
+**Tools**: `BAAI/bge-small-en-v1.5` for embeddings, ChromaDB with tagged collections, Gemini API (with max limits & rotation), FastAPI for streaming
 
 **Three knowledge sources in ChromaDB**:
 
@@ -139,16 +138,16 @@ Source 1 — Post text embeddings: every post's full_text embedded and stored, m
 
 Source 2 — Graph-derived account facts: top 20 accounts by PageRank, their community, dominant URLs and subreddits, spam score, written as natural language sentences. Answers "who are the most influential accounts" without searching post text.
 
-Source 3 — Topic cluster summaries: each BERTopic cluster's top terms plus sample posts converted to a paragraph by Claude API, stored with lifecycle stage and skewness score embedded in the text. Answers thematic questions and narrative questions.
+Source 3 — Topic cluster summaries: each BERTopic cluster's top terms plus sample posts converted to a paragraph by Gemini API, stored with lifecycle stage and skewness score embedded in the text. Answers thematic questions and narrative questions.
 
 **Query flow**:
 
 1. Embed user query with same model
 2. Retrieve top-5 from all three collections simultaneously
 3. Merge and rerank by cosine similarity
-4. Pass combined context to Claude API with system prompt defining role as social media research analyst
+4. Pass combined context to Gemini API with system prompt defining role as social media research analyst
 5. Stream response back to frontend
-6. Second small API call after response: Claude proposes 3 related queries based on what it just analyzed, displayed as clickable chips
+6. Second small API call after response: Gemini proposes 3 related queries based on what it just analyzed, displayed as clickable chips
 
 **Edge case handling**:
 
@@ -182,7 +181,7 @@ Source 3 — Topic cluster summaries: each BERTopic cluster's top terms plus sam
 
 ## Frontend Architecture
 
-**Tools**: React with Vite, Recharts for time-series, Plotly.js for embedding scatter, PyVis output as iframe for network graphs, TailwindCSS
+**Tools**: React with Vite, Recharts for time-series, DataMapPlot iframe for embeddings, Cytoscape.js for interactive network graphs, TailwindCSS
 
 **Pages**:
 

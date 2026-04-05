@@ -1,10 +1,26 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts'
+import PostModal from '../components/PostModal'
 
 export default function OverviewPage({ spamThreshold }) {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [modalPosts, setModalPosts] = useState(null)
+
+  const handleAnomalyClick = async (dateStr) => {
+    try {
+      const res = await axios.get(`http://127.0.0.1:8000/posts?date=${dateStr}`);
+      if (res.data.posts && res.data.posts.length > 0) {
+        setModalPosts(res.data.posts);
+      } else {
+        alert("No detailed posts retrieved for this date.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Failed to fetch posts.");
+    }
+  };
 
   useEffect(() => {
     // Usually the dashboard doesn't re-compute its static globals on spam_threshold, but if requested we could.
@@ -145,12 +161,16 @@ export default function OverviewPage({ spamThreshold }) {
                 <div className="flex flex-col gap-3">
                    {recent_anomalies && recent_anomalies.length > 0 ? (
                       recent_anomalies.map((anom, idx) => (
-                         <div key={idx} className="bg-gray-900 p-3 rounded border-l-4 border-l-red-500 border-gray-700 flex justify-between items-center">
+                         <div 
+                            key={idx} 
+                            onClick={() => handleAnomalyClick(anom.date)}
+                            className="bg-gray-900 p-3 rounded border-l-4 border-l-red-500 border-gray-700 flex justify-between items-center cursor-pointer hover:bg-gray-800 transition-colors"
+                         >
                             <span className="font-mono text-gray-300">{anom.date}</span>
                             <div className="flex items-center gap-4">
                                <span className="text-xs text-gray-500">Volume Surge:</span>
                                <span className="font-mono text-red-400 font-bold px-2 bg-red-900/30 rounded border border-red-900">
-                                  {anom.count} posts
+                                  {anom.value || anom.count} posts
                                </span>
                             </div>
                          </div>
@@ -163,6 +183,7 @@ export default function OverviewPage({ spamThreshold }) {
             
         </div>
       </div>
+      {modalPosts && <PostModal posts={modalPosts} onClose={() => setModalPosts(null)} />}
     </div>
   )
 }
