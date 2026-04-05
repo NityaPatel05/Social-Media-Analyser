@@ -14,7 +14,7 @@ export default function TopicPage({ spamThreshold }) {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://127.0.0.1:8000/topics?nr_topics=${nrTopics}&spam_threshold=${spamThreshold}`
+        `http://35.169.145.225:8000/topics?nr_topics=${nrTopics}&spam_threshold=${spamThreshold}`
       );
       setData(res.data);
     } catch (e) {
@@ -26,7 +26,7 @@ export default function TopicPage({ spamThreshold }) {
 
   const fetchMap = async () => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/topics/embedding`);
+      const res = await axios.get(`http://35.169.145.225:8000/topics/embedding`);
       setHtmlMap(res.data);
     } catch (e) {
       console.error(e);

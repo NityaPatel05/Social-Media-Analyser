@@ -10,7 +10,7 @@ export default function OverviewPage({ spamThreshold }) {
 
   const handleAnomalyClick = async (dateStr) => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/posts?date=${dateStr}`);
+      const res = await axios.get(`http://35.169.145.225:8000/posts?date=${dateStr}`);
       if (res.data.posts && res.data.posts.length > 0) {
         setModalPosts(res.data.posts);
       } else {
@@ -29,7 +29,7 @@ export default function OverviewPage({ spamThreshold }) {
     const fetchSummary = async () => {
       setLoading(true)
       try {
-        const res = await axios.get('http://127.0.0.1:8000/data/summary')
+        const res = await axios.get('http://35.169.145.225:8000/data/summary')
         setData(res.data)
       } catch (e) {
         console.error(e)

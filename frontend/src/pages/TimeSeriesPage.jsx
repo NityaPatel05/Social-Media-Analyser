@@ -38,7 +38,7 @@ export default function TimeSeriesPage({ spamThreshold }) {
 
   const handleDotClick = async (dateStr) => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/posts?date=${dateStr}`);
+      const res = await axios.get(`http://35.169.145.225:8000/posts?date=${dateStr}`);
       if (res.data.posts && res.data.posts.length > 0) {
         setModalPosts(res.data.posts);
       } else {
@@ -58,7 +58,7 @@ export default function TimeSeriesPage({ spamThreshold }) {
         if (kw) p.append("keyword", kw);
         if (sub) p.append("subreddit", sub);
         const res = await axios.get(
-          `http://127.0.0.1:8000/timeseries?${p.toString()}`,
+          `http://35.169.145.225:8000/timeseries?${p.toString()}`,
         );
         setData(res.data);
       } catch (e) {
@@ -76,7 +76,7 @@ export default function TimeSeriesPage({ spamThreshold }) {
       setTopicsLoading(true);
       try {
         const res = await axios.get(
-          `http://127.0.0.1:8000/topics?nr_topics=10&spam_threshold=${spamThreshold}`,
+          `http://35.169.145.225:8000/topics?nr_topics=10&spam_threshold=${spamThreshold}`,
         );
         setTopicsData(res.data);
       } catch (e) {

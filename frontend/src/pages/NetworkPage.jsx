@@ -64,7 +64,7 @@ export default function NetworkPage({ spamThreshold }) {
 
   const handleAuthorPosts = async (authorName) => {
       try {
-          const res = await axios.get(`http://127.0.0.1:8000/posts?author=${authorName}`);
+          const res = await axios.get(`http://35.169.145.225:8000/posts?author=${authorName}`);
           if (res.data.posts && res.data.posts.length > 0) {
               setModalPosts(res.data.posts);
           } else {
@@ -82,7 +82,7 @@ export default function NetworkPage({ spamThreshold }) {
     setError(null)
     try {
       const res = await axios.get(
-        `http://127.0.0.1:8000/network/${activeTab}` +
+        `http://35.169.145.225:8000/network/${activeTab}` +
         `?centrality=${centrality}&spam_threshold=${spamThreshold}`
       )
       setData(res.data)
@@ -157,7 +157,7 @@ export default function NetworkPage({ spamThreshold }) {
     if (!removeNodeId.trim()) return
     setLoading(true)
     try {
-      const res = await axios.post('http://127.0.0.1:8000/network/remove-node', {
+      const res = await axios.post('http://35.169.145.225:8000/network/remove-node', {
         graph_type: activeTab,
         node_id:    removeNodeId.trim(),
       })

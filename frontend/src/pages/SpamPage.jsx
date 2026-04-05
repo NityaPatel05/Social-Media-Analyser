@@ -15,7 +15,7 @@ export default function SpamPage({ spamThreshold }) {
     const fetchSpamData = async () => {
       setLoading(true)
       try {
-        const res = await axios.get(`http://127.0.0.1:8000/spam?threshold=${spamThreshold}`)
+        const res = await axios.get(`http://35.169.145.225:8000/spam?threshold=${spamThreshold}`)
         setAuthors(res.data)
       } catch (e) {
         console.error(e)
@@ -30,7 +30,7 @@ export default function SpamPage({ spamThreshold }) {
     setSelectedUser(username)
     setDetailsLoading(true)
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/accounts/${username}`)
+      const res = await axios.get(`http://35.169.145.225:8000/accounts/${username}`)
       setUserDetails(res.data)
     } catch (e) {
       console.error(e)
@@ -41,7 +41,7 @@ export default function SpamPage({ spamThreshold }) {
 
   const handleOpenDetailedPosts = async (username) => {
       try {
-          const res = await axios.get(`http://127.0.0.1:8000/posts?author=${username}`);
+          const res = await axios.get(`http://35.169.145.225:8000/posts?author=${username}`);
           if (res.data.posts && res.data.posts.length > 0) {
               setModalPosts(res.data.posts);
           } else {

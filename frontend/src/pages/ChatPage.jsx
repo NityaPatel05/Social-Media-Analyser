@@ -22,7 +22,7 @@ export default function ChatPage() {
   const handleSourceClick = async (docId) => {
     if (!docId || !docId.startsWith("post_")) return;
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/posts?id=${docId}`);
+      const res = await axios.get(`http://35.169.145.225:8000/posts?id=${docId}`);
       if (res.data.posts && res.data.posts.length > 0) {
         setModalPosts(res.data.posts);
       } else {
@@ -53,7 +53,7 @@ export default function ChatPage() {
     ]);
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch("http://35.169.145.225:8000/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: q }),
