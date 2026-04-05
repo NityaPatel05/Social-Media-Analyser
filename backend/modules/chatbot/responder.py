@@ -123,7 +123,7 @@ async def stream_response(query: str, context_results: list):
         ):
             mark_gemini_key_exhausted(api_key)
         logger.error(f"Error in stream_response: {e}")
-        yield f"data: {json.dumps({'type': 'error', 'content': 'An error occurred during response generation.'})}\n\n"
+        yield f"data: {json.dumps({'type': 'error', 'content': f'Gemini API Error: {str(e)}'})}\n\n"
 # ══════════════════════════════════════════════════════════════════════════════
 # NEW: LangGraph-powered chatbot using HuggingFace Inference API (free models)
 # Architecture: synthesize_node → suggest_node

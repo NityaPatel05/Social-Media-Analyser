@@ -48,46 +48,12 @@ def get_community_label(top_nodes: list) -> str:
         logger.info(f"Community label cache HIT for key {cache_key} — skipping Gemini call.")
         return _label_cache[cache_key]
 
-    # ── Quota guard ───────────────────────────────────────────────────────────
-    api_key = get_gemini_api_key()
-    if not api_key:
-        logger.info("All Gemini API keys exhausted or none provided — skipping label call.")
-        return "Unknown Cluster"
-
-    try:
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-2.5-flash")
-
-        prompt = f"""
-        You are a social media analyst. Here are the top 5 most influential users or domains
-        in a networked cluster: {', '.join(top_nodes)}.
-        Please provide a concise 3-word label summarizing the nature of this community.
-        Return ONLY the 3 words.
-        """
-        # Throttle: stay under 5 req/min rate limit
-        time.sleep(13)
-        increment_gemini_key_usage(api_key)
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(max_output_tokens=20, temperature=0.3)
-        )
-        if not response.candidates or not response.candidates[0].content.parts:
-            logger.warning("Gemini returned no content parts (safety filter). Using default label.")
-            return "Unknown Cluster"
-
-        label = response.text.replace('"', '').strip()
-        # Store in cache so this community is never re-labelled
-        _label_cache[cache_key] = label
-        logger.info(f"Community label cached: '{label}' (key={cache_key})")
-        return label
-
-    except Exception as e:
-        err_str = str(e)
-        logger.error(f"Gemini API call failed for label: {e}")
-        if "GenerateRequestsPerDay" in err_str or ("429" in err_str and "limit: 20" in err_str) or "Quota exceeded" in err_str:
-            mark_gemini_key_exhausted(api_key)
-            logger.warning("Gemini daily quota exhausted for this key — marked for 24h.")
-        return "Unknown Cluster"
+    # ── User Bypass ───────────────────────────────────────────────────────────
+    # Skip actual API call to save quota, returning a default placeholder.
+    logger.info(f"Bypassing Gemini API label call for {cache_key} to save quota.")
+    label = "Community Cluster"
+    _label_cache[cache_key] = label
+    return label
 
 
 def convert_nx_to_ig(G_nx: nx.Graph) -> ig.Graph:
