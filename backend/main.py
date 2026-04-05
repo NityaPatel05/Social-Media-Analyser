@@ -559,50 +559,50 @@ async def get_topics_embedding():
         logger.error(f"Error in /topics/embedding: {e}")
         raise HTTPException(status_code=500, detail="Internal server error")
 
-@app.post("/chat")
-async def chat_endpoint(req: ChatRequest):
-    """
-    LangGraph-powered RAG chatbot endpoint.
+# @app.post("/chat")
+# async def chat_endpoint(req: ChatRequest):
+#     """
+#     LangGraph-powered RAG chatbot endpoint.
 
-    Flow:
-      1. retrieve()    — embed query → search ChromaDB (posts, graphs, topics) → top-5 chunks
-      2. stream_response() — LangGraph graph: synthesize_node (HF stream) → suggest_node (HF non-stream)
-      3. Each SSE frame matches { type: 'meta'|'token'|'suggestions'|'error', content: ... }
-    """
-    try:
-        query = req.query
-        col_posts  = app_data["chroma"]["col_posts"]
-        col_graphs = app_data["chroma"]["col_graphs"]
-        col_topics = app_data["chroma"]["col_topics"]
+#     Flow:
+#       1. retrieve()    — embed query → search ChromaDB (posts, graphs, topics) → top-5 chunks
+#       2. stream_response() — LangGraph graph: synthesize_node (HF stream) → suggest_node (HF non-stream)
+#       3. Each SSE frame matches { type: 'meta'|'token'|'suggestions'|'error', content: ... }
+#     """
+#     try:
+#         query = req.query
+#         col_posts  = app_data["chroma"]["col_posts"]
+#         col_graphs = app_data["chroma"]["col_graphs"]
+#         col_topics = app_data["chroma"]["col_topics"]
 
-        # Step 1 — RAG retrieval (unchanged, still uses sentence-transformers + ChromaDB)
-        ret_res = retrieve(query, col_posts, col_graphs, col_topics, top_k=5)
+#         # Step 1 — RAG retrieval (unchanged, still uses sentence-transformers + ChromaDB)
+#         ret_res = retrieve(query, col_posts, col_graphs, col_topics, top_k=5)
 
-        if ret_res.get("error"):
-            # Return error as properly delimited SSE frames
-            async def error_stream():
-                yield f"data: {json.dumps({'type': 'error', 'content': ret_res.get('message')})}" + "\n\n"
-                yield f"data: {json.dumps({'type': 'suggestions', 'content': ['Try a longer keyword', 'Search for specific subreddits']})}" + "\n\n"
-            return StreamingResponse(error_stream(), media_type="text/event-stream")
+#         if ret_res.get("error"):
+#             # Return error as properly delimited SSE frames
+#             async def error_stream():
+#                 yield f"data: {json.dumps({'type': 'error', 'content': ret_res.get('message')})}" + "\n\n"
+#                 yield f"data: {json.dumps({'type': 'suggestions', 'content': ['Try a longer keyword', 'Search for specific subreddits']})}" + "\n\n"
+#             return StreamingResponse(error_stream(), media_type="text/event-stream")
 
-        async def response_generator():
-            # Send initial sources payload to UI instantly (before LLM starts)
-            init_payload = {
-                "type":     "meta",
-                "sources":  ret_res["results"],
-                "counts":   ret_res["counts"],
-                "language": ret_res["detected_language"]
-            }
-            yield f"data: {json.dumps(init_payload)}" + "\n\n"
+#         async def response_generator():
+#             # Send initial sources payload to UI instantly (before LLM starts)
+#             init_payload = {
+#                 "type":     "meta",
+#                 "sources":  ret_res["results"],
+#                 "counts":   ret_res["counts"],
+#                 "language": ret_res["detected_language"]
+#             }
+#             yield f"data: {json.dumps(init_payload)}" + "\n\n"
 
-            # Step 2 — LangGraph: streams tokens then suggestions via HuggingFace Inference API
-            async for chunk in stream_response(query, ret_res["results"]):
-                yield chunk
+#             # Step 2 — LangGraph: streams tokens then suggestions via HuggingFace Inference API
+#             async for chunk in stream_response(query, ret_res["results"]):
+#                 yield chunk
 
-        return StreamingResponse(response_generator(), media_type="text/event-stream")
-    except Exception as e:
-        logger.error(f"Error in /chat: {e}")
-        raise HTTPException(status_code=500, detail="Internal server error")
+#         return StreamingResponse(response_generator(), media_type="text/event-stream")
+#     except Exception as e:
+#         logger.error(f"Error in /chat: {e}")
+#         raise HTTPException(status_code=500, detail="Internal server error")
 
 @app.post("/chat")
 async def chat_endpoint(req: ChatRequest):
